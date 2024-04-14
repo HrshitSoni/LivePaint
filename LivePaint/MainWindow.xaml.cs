@@ -39,17 +39,12 @@ namespace LivePaint
 
         public enum Controls
         {
-            Select,Pen,HighLighter,Eraser
+           Pen,HighLighter,Eraser
         }
         public MainWindow()
         {
             InitializeComponent();
             Canvas.DefaultDrawingAttributes = penAtt;
-        }
-
-        private void SelectBtn_Click(object sender, RoutedEventArgs e)
-        {
-            setControl(Controls.Select);
         }
 
         private void PenBtn_Click(object sender , RoutedEventArgs e)
@@ -69,17 +64,13 @@ namespace LivePaint
 
         private void setControl(Controls control)
         {
-            SelectBtn.IsChecked = false;
+            
             PenBtn.IsChecked = false;
             HighlighterBtn.IsChecked = false;
             EraserBtn.IsChecked = false;
 
             switch (control)
             {
-                case Controls.Select:
-                    SelectBtn.IsChecked = true;
-                    Canvas.EditingMode = InkCanvasEditingMode.Select;
-                    break;
                 case Controls.Pen:
                     PenBtn.IsChecked = true;
                     Canvas.EditingMode = InkCanvasEditingMode.Ink;

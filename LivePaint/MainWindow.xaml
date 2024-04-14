@@ -23,9 +23,6 @@
         <StackPanel Grid.Column="1" Margin="20" VerticalAlignment="Center">
             <Label Content="Controls" FontWeight="Bold" FontSize="16"/>
             <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
-                <ToggleButton Name="SelectBtn" Padding="5" Margin="0,0,10,0" ToolTip="Select" Background="White" Click="SelectBtn_Click">
-                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/cursor--v1.png"/>
-                </ToggleButton>
                 <ToggleButton Name="PenBtn" Padding="5" Margin="0,0,10,0" ToolTip="Pen" Background="White" IsChecked="True" Click="PenBtn_Click">
                     <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/pen-1.png"/>
                 </ToggleButton>
