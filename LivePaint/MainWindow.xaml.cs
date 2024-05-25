@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using LivePaint.Models;
+using Microsoft.Win32;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -13,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit;
+
 
 namespace LivePaint
 {
@@ -28,7 +32,7 @@ namespace LivePaint
             Width = 2
         };
 
-        private  DrawingAttributes highLighterAtt = new()
+        private DrawingAttributes highLighterAtt = new()
         {
             Color = Colors.Yellow,
             Height = 10,
@@ -37,16 +41,19 @@ namespace LivePaint
             StylusTip = StylusTip.Rectangle
         };
 
+        public List<DrawModel> drawModels = new List<DrawModel>();
         public enum Controls
         {
-           Pen,HighLighter,Eraser
+            Pen, HighLighter, Eraser
         }
         public MainWindow()
         {
             InitializeComponent();
-            Canvas.DefaultDrawingAttributes = penAtt;
-        }
 
+            Canvas.DefaultDrawingAttributes = penAtt;
+
+            Canvas.StrokeCollected += StrokeCollected;
+        }
         private void PenBtn_Click(object sender , RoutedEventArgs e)
         {
             setControl(Controls.Pen);
@@ -151,41 +158,40 @@ namespace LivePaint
             PngBitmapEncoder pngBitmapEncoder = new PngBitmapEncoder();
             pngBitmapEncoder.Frames.Add(BitmapFrame.Create(renderTarget));
 
-
-
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
+            if (!string.IsNullOrWhiteSpace(fileName))
             {
-                pngBitmapEncoder.Save(fileStream);
-                MessageBox.Show("File saved successfully,SUCCESS");
-            }
-
-        }
-
-        private void OpenBtn_Click(object sender,RoutedEventArgs e)
-        {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.InitialDirectory = @"C:\Practice Projects\LivePaint\LivePaint\SavedImages";
-                openFileDialog.Filter = "All Files (*.*)|*.*";
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.Multiselect = false;
-
-                if (openFileDialog.ShowDialog() == true)
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    // Get the selected file path
-                    string filePath = openFileDialog.FileName;
-
-                    // Create a bitmap from the selected file
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.UriSource = new Uri(filePath);
-                    bitmapImage.EndInit();
-
-                    // Display the bitmap on the canvas
-                    Image image = new Image();
-                    image.Source = bitmapImage;
-                    Canvas.Children.Add(image);
-                }
-           
+                    pngBitmapEncoder.Save(fileStream);
+                    System.Windows.MessageBox.Show("File saved successfully", "SUCCESS");
+                } 
+            }
+            else
+            {
+                return;
+            }
         }
-    } 
+
+        private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            // Extract stroke information 
+            Stroke stroke = e.Stroke;
+            System.Windows.Point startPoint = stroke.StylusPoints[0].ToPoint();
+            System.Windows.Point endPoint = stroke.StylusPoints[stroke.StylusPoints.Count - 1].ToPoint();
+            System.Windows.Media.Color myColor = stroke.DrawingAttributes.Color;
+            System.Drawing.Color convertedColor = System.Drawing.Color.FromArgb(myColor.A, myColor.R, myColor.G, myColor.B);
+
+            DrawModel d = new DrawModel()
+            {
+                StartX = startPoint.X,
+                StartY = startPoint.Y,
+                EndX = endPoint.X,
+                EndY = endPoint.Y,
+                ColorCode = convertedColor.ToArgb(),
+                Thickness = stroke.DrawingAttributes.Width
+            };
+            drawModels.Add(d);    
+        }
+    }
+   
 }   

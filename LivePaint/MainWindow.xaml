@@ -56,7 +56,6 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Button Content="Save" HorizontalAlignment="Left" Width="100" Height="30" Margin="0,20,0,0" Background="White" Click="SaveBtn_Click"/>
-                <Button Content="Open" HorizontalAlignment="Right" Width="100" Height="30" Margin="35,20,0,0" Background="White" Click="OpenBtn_Click"/>
             </StackPanel>
         </StackPanel>
        
