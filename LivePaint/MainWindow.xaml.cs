@@ -1,65 +1,142 @@
-﻿using LivePaint.Models;
-using Microsoft.Win32;
+﻿using LivePaint.Server.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit;
-
 
 namespace LivePaint
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private DrawingAttributes penAtt = new()
+        private readonly DrawingAttributes penAtt = new()
         {
             Color = Colors.Black,
             Height = 2,
             Width = 2
         };
 
-        private DrawingAttributes highLighterAtt = new()
+        private readonly DrawingAttributes highLighterAtt = new()
         {
             Color = Colors.Yellow,
             Height = 10,
             Width = 2,
             IsHighlighter = true,
-            StylusTip = StylusTip.Rectangle
         };
 
-        public List<DrawModel> drawModels = new List<DrawModel>();
+        private Point lastPoint;
+        private HubConnection hubConnection;
         public enum Controls
         {
             Pen, HighLighter, Eraser
         }
+
         public MainWindow()
         {
             InitializeComponent();
-
+            InitializeSignalR();
             Canvas.DefaultDrawingAttributes = penAtt;
 
-            Canvas.StrokeCollected += StrokeCollected;
+            Canvas.StrokeCollected += Canvas_StrokeCollected;
+            Canvas.MouseMove += Canvas_MouseMove;
+            Canvas.StylusDown += Canvas_StylusDown;
         }
-        private void PenBtn_Click(object sender , RoutedEventArgs e)
+
+        private async void InitializeSignalR()
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7223/DrawHub")
+                .WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<DrawModel>("ReceiveDrawing", (drawModel) =>
+            {
+                Application.Current.Dispatcher.Invoke(() => UpdateCanvas(drawModel));
+            });
+
+            await hubConnection.StartAsync();
+        }
+
+        private async void SendDrawing(DrawModel drawModel)
+        {
+            await hubConnection.InvokeAsync("SendDrawing", drawModel);
+        }
+
+        private void Canvas_StylusDown(object sender, StylusDownEventArgs e)
+        {
+            lastPoint = e.GetPosition(Canvas);
+        }
+
+        private void Canvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            var stroke = e.Stroke;
+            var points = stroke.StylusPoints;
+
+            if (points.Count < 2) return;
+
+            var drawModel = new DrawModel
+            {
+                startX = points[0].X,
+                startY = points[0].Y,
+                currX = points[points.Count - 1].X,
+                currY = points[points.Count - 1].Y,
+                color = stroke.DrawingAttributes.Color.ToString(),
+                thickness = stroke.DrawingAttributes.Width
+            };
+
+            SendDrawing(drawModel);
+        }
+
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var position = e.GetPosition(Canvas);
+                var drawModel = new DrawModel
+                {
+                    startX = lastPoint.X,
+                    startY = lastPoint.Y,
+                    currX = position.X,
+                    currY = position.Y,
+                    color = penAtt.Color.ToString(),
+                    thickness = penAtt.Width
+                };
+
+                SendDrawing(drawModel);
+
+                lastPoint = position; // Update lastPoint to current position for next segment
+            }
+        }
+
+        private void UpdateCanvas(DrawModel drawModel)
+        {
+            var startPoint = new StylusPoint(drawModel.startX, drawModel.startY);
+            var endPoint = new StylusPoint(drawModel.currX, drawModel.currY);
+            var points = new StylusPointCollection { startPoint, endPoint };
+            var stroke = new Stroke(points)
+            {
+                DrawingAttributes = new DrawingAttributes
+                {
+                    Color = (Color)ColorConverter.ConvertFromString(drawModel.color),
+                    Width = drawModel.thickness,
+                    Height = drawModel.thickness
+                }
+            };
+
+            Canvas.Strokes.Add(stroke);
+        }
+
+        private void PenBtn_Click(object sender, RoutedEventArgs e)
         {
             setControl(Controls.Pen);
         }
 
-        private void HighlighterBtn_Click(object sender,RoutedEventArgs e)
+        private void HighlighterBtn_Click(object sender, RoutedEventArgs e)
         {
             setControl(Controls.HighLighter);
         }
@@ -71,7 +148,6 @@ namespace LivePaint
 
         private void setControl(Controls control)
         {
-            
             PenBtn.IsChecked = false;
             HighlighterBtn.IsChecked = false;
             EraserBtn.IsChecked = false;
@@ -99,7 +175,6 @@ namespace LivePaint
                         Canvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
                     }
                     break;
-                   
             }
         }
 
@@ -115,32 +190,32 @@ namespace LivePaint
             penAtt.Width = ThicknessSlider.Value;
         }
 
-        private void YellowRadio_Click(object sender , RoutedEventArgs e)
+        private void YellowRadio_Click(object sender, RoutedEventArgs e)
         {
             highLighterAtt.Color = Colors.Yellow;
         }
 
-        private void CyanRadio_Click(object sender , RoutedEventArgs e)
+        private void CyanRadio_Click(object sender, RoutedEventArgs e)
         {
             highLighterAtt.Color = Colors.Cyan;
         }
 
-        private void MagentaRadio_Click(object sender , RoutedEventArgs e)
+        private void MagentaRadio_Click(object sender, RoutedEventArgs e)
         {
             highLighterAtt.Color = Colors.Magenta;
         }
 
-        private void PartialStrokeRadio_Click(object sender,RoutedEventArgs e)
+        private void PartialStrokeRadio_Click(object sender, RoutedEventArgs e)
         {
-            if(EraserBtn.IsChecked == true)
+            if (EraserBtn.IsChecked == true)
             {
                 Canvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
             }
         }
 
-        private void FullStrokeRadio_Click(object sender,RoutedEventArgs e)
+        private void FullStrokeRadio_Click(object sender, RoutedEventArgs e)
         {
-            if(EraserBtn.IsChecked == true)
+            if (EraserBtn.IsChecked == true)
             {
                 Canvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
             }
@@ -152,7 +227,7 @@ namespace LivePaint
             string fileName = Microsoft.VisualBasic.Interaction.InputBox("Enter the file name:", "Save Image", "image.png");
             string filePath = System.IO.Path.Combine(folderPath, fileName);
 
-            RenderTargetBitmap renderTarget = new RenderTargetBitmap((int)Canvas.ActualHeight, (int)Canvas.ActualWidth, 96d, 96d, PixelFormats.Pbgra32);
+            RenderTargetBitmap renderTarget = new RenderTargetBitmap((int)Canvas.ActualWidth, (int)Canvas.ActualHeight, 96d, 96d, PixelFormats.Pbgra32);
             renderTarget.Render(Canvas);
 
             PngBitmapEncoder pngBitmapEncoder = new PngBitmapEncoder();
@@ -163,35 +238,9 @@ namespace LivePaint
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     pngBitmapEncoder.Save(fileStream);
-                    System.Windows.MessageBox.Show("File saved successfully", "SUCCESS");
-                } 
+                   System.Windows.MessageBox.Show("File saved successfully", "SUCCESS");
+                }
             }
-            else
-            {
-                return;
-            }
-        }
-
-        private void StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
-        {
-            // Extract stroke information 
-            Stroke stroke = e.Stroke;
-            System.Windows.Point startPoint = stroke.StylusPoints[0].ToPoint();
-            System.Windows.Point endPoint = stroke.StylusPoints[stroke.StylusPoints.Count - 1].ToPoint();
-            System.Windows.Media.Color myColor = stroke.DrawingAttributes.Color;
-            System.Drawing.Color convertedColor = System.Drawing.Color.FromArgb(myColor.A, myColor.R, myColor.G, myColor.B);
-
-            DrawModel d = new DrawModel()
-            {
-                StartX = startPoint.X,
-                StartY = startPoint.Y,
-                EndX = endPoint.X,
-                EndY = endPoint.Y,
-                ColorCode = convertedColor.ToArgb(),
-                Thickness = stroke.DrawingAttributes.Width
-            };
-            drawModels.Add(d);    
         }
     }
-   
-}   
+}

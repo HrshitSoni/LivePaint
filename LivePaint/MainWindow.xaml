@@ -55,7 +55,7 @@
                 <RadioButton Name="FullStrokeRadio" Click="FullStrokeRadio_Click" Content="Full stroke" GroupName="EraserTypeRadios" FontSize="14" VerticalContentAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Button Content="Save" HorizontalAlignment="Left" Width="100" Height="30" Margin="0,20,0,0" Background="White" Click="SaveBtn_Click"/>
+                <Button Content="Save" HorizontalAlignment="Left" Width="100" Height="30" Margin="80,20,0,0" Background="White" Click="SaveBtn_Click"/>
             </StackPanel>
         </StackPanel>
        

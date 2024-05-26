@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivePaint", "LivePaint\LivePaint.csproj", "{0645C0EC-ABEB-4E2A-89B1-A3967419B258}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivePaint", "LivePaint\LivePaint.csproj", "{0645C0EC-ABEB-4E2A-89B1-A3967419B258}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivePaint.Server", "LivePaint.Server\LivePaint.Server.csproj", "{FB78D132-EF2B-40EB-ABB6-062E76A74FD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0645C0EC-ABEB-4E2A-89B1-A3967419B258}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0645C0EC-ABEB-4E2A-89B1-A3967419B258}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0645C0EC-ABEB-4E2A-89B1-A3967419B258}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB78D132-EF2B-40EB-ABB6-062E76A74FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB78D132-EF2B-40EB-ABB6-062E76A74FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB78D132-EF2B-40EB-ABB6-062E76A74FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB78D132-EF2B-40EB-ABB6-062E76A74FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
