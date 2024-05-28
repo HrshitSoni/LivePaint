@@ -8,5 +8,6 @@
         public double currY { get; set; }
         public string color { get; set; }
         public double thickness { get; set; }
+        public bool isHighlighter { get; set; }
     }
 }

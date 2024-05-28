@@ -1,6 +1,6 @@
 ﻿using LivePaint.Server.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +18,8 @@ namespace LivePaint
         {
             Color = Colors.Black,
             Height = 2,
-            Width = 2
+            Width = 2,
+            IsHighlighter = false,
         };
 
         private readonly DrawingAttributes highLighterAtt = new()
@@ -27,9 +28,10 @@ namespace LivePaint
             Height = 10,
             Width = 2,
             IsHighlighter = true,
+            StylusTip = StylusTip.Rectangle
         };
 
-        private Point lastPoint;
+        private System.Windows.Point lastPoint;
         private HubConnection hubConnection;
         public enum Controls
         {
@@ -77,20 +79,23 @@ namespace LivePaint
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                var position = e.GetPosition(this.Canvas);
+                var position = e.GetPosition(Canvas);
 
                 if (lastPoint == default)
                 {
                     lastPoint = position;
                 }
+                var CanvasDrawingAtt = Canvas.DefaultDrawingAttributes;
+
                 var drawModel = new DrawModel
                 {
                     startX = lastPoint.X,
                     startY = lastPoint.Y,
                     currX = position.X,
                     currY = position.Y,
-                    color = penAtt.Color.ToString(),
-                    thickness = penAtt.Height // penAtt.Weight 
+                    color = CanvasDrawingAtt.Color.ToString(),
+                    thickness = CanvasDrawingAtt.Height,
+                    isHighlighter = CanvasDrawingAtt.IsHighlighter,
                 };
 
                 SendDrawing(drawModel);
@@ -110,7 +115,8 @@ namespace LivePaint
                 {
                     Color = (Color)ColorConverter.ConvertFromString(drawModel.color),
                     Width = drawModel.thickness,
-                    Height = drawModel.thickness
+                    Height = drawModel.thickness,
+                    IsHighlighter = drawModel.isHighlighter,
                 }
             };
 
