@@ -42,9 +42,8 @@ namespace LivePaint
             InitializeSignalR();
             Canvas.DefaultDrawingAttributes = penAtt;
 
-            Canvas.StrokeCollected += Canvas_StrokeCollected;
+            Canvas.MouseUp += Canvas_MouseUp;
             Canvas.MouseMove += Canvas_MouseMove;
-            Canvas.StylusDown += Canvas_StylusDown;
         }
 
         private async void InitializeSignalR()
@@ -67,36 +66,23 @@ namespace LivePaint
             await hubConnection.InvokeAsync("SendDrawing", drawModel);
         }
 
-        private void Canvas_StylusDown(object sender, StylusDownEventArgs e)
+        private void Canvas_MouseUp(object sender, MouseEventArgs e)
         {
-            lastPoint = e.GetPosition(Canvas);
-        }
-
-        private void Canvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
-        {
-            var stroke = e.Stroke;
-            var points = stroke.StylusPoints;
-
-            if (points.Count < 2) return;
-
-            var drawModel = new DrawModel
+            if(e.LeftButton == MouseButtonState.Released)
             {
-                startX = points[0].X,
-                startY = points[0].Y,
-                currX = points[points.Count - 1].X,
-                currY = points[points.Count - 1].Y,
-                color = stroke.DrawingAttributes.Color.ToString(),
-                thickness = stroke.DrawingAttributes.Width
-            };
-
-            SendDrawing(drawModel);
+                lastPoint = default;
+            }
         }
-
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                var position = e.GetPosition(Canvas);
+                var position = e.GetPosition(this.Canvas);
+
+                if (lastPoint == default)
+                {
+                    lastPoint = position;
+                }
                 var drawModel = new DrawModel
                 {
                     startX = lastPoint.X,
@@ -104,12 +90,12 @@ namespace LivePaint
                     currX = position.X,
                     currY = position.Y,
                     color = penAtt.Color.ToString(),
-                    thickness = penAtt.Width
+                    thickness = penAtt.Height // penAtt.Weight 
                 };
 
                 SendDrawing(drawModel);
 
-                lastPoint = position; // Update lastPoint to current position for next segment
+                lastPoint = position;
             }
         }
 
@@ -117,7 +103,7 @@ namespace LivePaint
         {
             var startPoint = new StylusPoint(drawModel.startX, drawModel.startY);
             var endPoint = new StylusPoint(drawModel.currX, drawModel.currY);
-            var points = new StylusPointCollection { startPoint, endPoint };
+            var points = new StylusPointCollection {startPoint, endPoint };
             var stroke = new Stroke(points)
             {
                 DrawingAttributes = new DrawingAttributes
