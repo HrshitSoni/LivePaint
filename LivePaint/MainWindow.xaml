@@ -20,7 +20,15 @@
                 <InkCanvas x:Name="Canvas" Background="White"/>
             </Grid>
         </Border>
-        <StackPanel Grid.Column="1" Margin="20" VerticalAlignment="Center">
+        <StackPanel Grid.Column="1" Margin="20,0,20,0" VerticalAlignment="Center" Height="430" RenderTransformOrigin="0.5,0.5">
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="0.318"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
             <Label Content="Controls" FontWeight="Bold" FontSize="16"/>
             <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
                 <ToggleButton Name="PenBtn" Padding="5" Margin="0,0,10,0" ToolTip="Pen" Background="White" IsChecked="True" Click="PenBtn_Click">
@@ -36,7 +44,7 @@
             <Label Content="Pen colour" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
             <xctk:ColorPicker x:Name="PenColorPicker" SelectedColorChanged="PenColorPicker_SelectedColorChanged" ShowStandardColors="False" UsingAlphaChannel="False" SelectedColor="Black" Margin="5,10,0,0" Height="30" ColorMode="ColorCanvas" DisplayColorAndName="True" Width="200" HorizontalAlignment="Left" FontSize="14"/>
             <Label Content="Pen thickness" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
-            <Slider x:Name="ThicknessSlider" ValueChanged="ThicknessSlider_ValueChanged" Margin="5,10,0,0" IsSnapToTickEnabled="True" Minimum="1" Maximum="7" Value="2"/>
+            <Slider x:Name="ThicknessSlider" ValueChanged="ThicknessSlider_ValueChanged" Margin="5,10,0,0" IsSnapToTickEnabled="True" Minimum="1" Maximum="10" Value="2"/>
             <Label Content="Highlighter colour" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
             <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
                 <RadioButton Name="YellowRadio" Click="YellowRadio_Click" GroupName="HighlighterRadios" Margin="0,0,15,0" IsChecked="True" VerticalContentAlignment="Center">
@@ -49,15 +57,18 @@
                     <Rectangle Fill="Magenta" Height="20" Width="50" Stroke="Gray"/>
                 </RadioButton>
             </StackPanel>
-            <Label Content="Eraser type" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>
-            <StackPanel Orientation="Horizontal" Margin="5,10,0,5">
-                <RadioButton Name="PartialStrokeRadio" Click="PartialStrokeRadio_Click" Content="Partial stroke" GroupName="EraserTypeRadios" Margin="0,0,25,0" IsChecked="True" FontSize="14" VerticalContentAlignment="Center"/>
-                <RadioButton Name="FullStrokeRadio" Click="FullStrokeRadio_Click" Content="Full stroke" GroupName="EraserTypeRadios" FontSize="14" VerticalContentAlignment="Center"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Save" HorizontalAlignment="Left" Width="100" Height="30" Margin="80,20,0,0" Background="White" Click="SaveBtn_Click"/>
-            </StackPanel>
+            <StackPanel Orientation="Horizontal"/>
         </StackPanel>
-       
+        <Button Content="Save" Background="White" Click="SaveBtn_Click" RenderTransformOrigin="0.5,0.5" Grid.Column="1" Margin="74,466,75,68">
+            <Button.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="1.087"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Button.RenderTransform>
+        </Button>
+
     </Grid>
 </Window>

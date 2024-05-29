@@ -6,8 +6,10 @@
         public double startY { get; set; }
         public double currX { get; set; }
         public double currY { get; set; }
-        public string color { get; set; }
+        public string? color { get; set; }
         public double thickness { get; set; }
         public bool isHighlighter { get; set; }
+        public bool isEraser { get; set; }
+
     }
 }

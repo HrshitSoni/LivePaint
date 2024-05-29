@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
@@ -28,7 +29,6 @@ namespace LivePaint
             Height = 10,
             Width = 2,
             IsHighlighter = true,
-            StylusTip = StylusTip.Rectangle
         };
 
         private System.Windows.Point lastPoint;
@@ -60,7 +60,15 @@ namespace LivePaint
                 Application.Current.Dispatcher.Invoke(() => UpdateCanvas(drawModel));
             });
 
-            await hubConnection.StartAsync();
+            try
+            {
+                await hubConnection.StartAsync();
+            }
+            catch (Exception e)
+            {
+
+                System.Windows.MessageBox.Show(e.ToString(), "ERROR");
+            }
         }
 
         private async void SendDrawing(DrawModel drawModel)
@@ -96,6 +104,7 @@ namespace LivePaint
                     color = CanvasDrawingAtt.Color.ToString(),
                     thickness = CanvasDrawingAtt.Height,
                     isHighlighter = CanvasDrawingAtt.IsHighlighter,
+                    isEraser = EraserBtn.IsChecked == true
                 };
 
                 SendDrawing(drawModel);
@@ -119,8 +128,18 @@ namespace LivePaint
                     IsHighlighter = drawModel.isHighlighter,
                 }
             };
-
-            Canvas.Strokes.Add(stroke);
+            if (drawModel.isEraser)
+            {
+                var hitStrokes = Canvas.Strokes.HitTest(new Point(drawModel.currX, drawModel.currY), drawModel.thickness);
+                foreach (var hitStroke in hitStrokes)
+                {
+                    Canvas.Strokes.Remove(hitStroke);
+                }
+            }
+            else
+            {
+                Canvas.Strokes.Add(stroke);
+            }
         }
 
         private void PenBtn_Click(object sender, RoutedEventArgs e)
@@ -158,14 +177,8 @@ namespace LivePaint
                     break;
                 case Controls.Eraser:
                     EraserBtn.IsChecked = true;
-                    if (PartialStrokeRadio.IsChecked == true)
-                    {
-                        Canvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-                    }
-                    else
-                    {
-                        Canvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-                    }
+                    Canvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
+              
                     break;
             }
         }
@@ -178,8 +191,11 @@ namespace LivePaint
 
         private void ThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            penAtt.Height = ThicknessSlider.Value;
-            penAtt.Width = ThicknessSlider.Value;
+            if (PenBtn.IsChecked == true)
+            {
+                penAtt.Height = ThicknessSlider.Value;
+                penAtt.Width = ThicknessSlider.Value; 
+            }
         }
 
         private void YellowRadio_Click(object sender, RoutedEventArgs e)

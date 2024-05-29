@@ -5,9 +5,9 @@ namespace LivePaint.Server.Hubs
 {
     public class DrawHub:Hub
     {
-        public async Task SendDrawing(DrawModel draw)
+        public async Task SendDrawing(DrawModel drawModel)
         {
-            await Clients.Others.SendAsync("ReceiveDrawing", draw); 
+            await Clients.Others.SendAsync("ReceiveDrawing", drawModel); 
         }
     }
 }
