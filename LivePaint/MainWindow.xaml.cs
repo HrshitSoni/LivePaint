@@ -67,7 +67,7 @@ namespace LivePaint
             catch (Exception e)
             {
 
-                System.Windows.MessageBox.Show(e.ToString(), "ERROR");
+                System.Windows.MessageBox.Show(e.Message, "ERROR");
             }
         }
 
