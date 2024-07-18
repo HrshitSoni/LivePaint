@@ -6,6 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:LivePaint"
         mc:Ignorable="d"
+        Icon="pack://application:,,,/AppIcons/AppIcon.png"
         Title="LivePaint" Height="600" Width="900">
     <Grid Background="AntiqueWhite">
         <Grid.ColumnDefinitions>
@@ -32,13 +33,13 @@
             <Label Content="Controls" FontWeight="Bold" FontSize="16"/>
             <StackPanel Orientation="Horizontal" Margin="5,10,0,0">
                 <ToggleButton Name="PenBtn" Padding="5" Margin="0,0,10,0" ToolTip="Pen" Background="White" IsChecked="True" Click="PenBtn_Click">
-                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/pen-1.png"/>
+                    <Image Height="24" Width="24" Source="pack://application:,,,/AppIcons/PenIcon.jpg" Stretch="Fill"/>
                 </ToggleButton>
                 <ToggleButton Name="HighlighterBtn" Padding="5" Margin="0,0,10,0" ToolTip="Highlighter" Background="White" Click="HighlighterBtn_Click">
-                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/border-color.png"/>
+                    <Image Height="24" Width="24" Source="pack://application:,,,/AppIcons/HighlighterIcon.jpg" Stretch="Fill"/>
                 </ToggleButton>
                 <ToggleButton Name="EraserBtn" Padding="5" Margin="0,0,10,0" ToolTip="Eraser" Background="White" Click="EraserBtn_Click">
-                    <Image Height="24" Width="24" Source="https://img.icons8.com/fluency/48/erase.png"/>
+                    <Image Height="24" Width="24" Source="pack://application:,,,/AppIcons/Erasericon.jpg" Stretch="Fill"/>
                 </ToggleButton>
             </StackPanel>
             <Label Content="Pen colour" FontWeight="SemiBold" FontSize="16" Margin="0,25,0,0"/>

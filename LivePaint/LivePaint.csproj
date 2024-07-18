@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AppIcons\AppIcon.png" />
+    <None Remove="AppIcons\Erasericon.jpg" />
+    <None Remove="AppIcons\HighlighterIcon.jpg" />
+    <None Remove="AppIcons\PenIcon.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -16,6 +23,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LivePaint.Server\LivePaint.Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="AppIcons\AppIcon.png" />
+    <Resource Include="AppIcons\Erasericon.jpg" />
+    <Resource Include="AppIcons\HighlighterIcon.jpg" />
+    <Resource Include="AppIcons\PenIcon.jpg" />
   </ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@ namespace LivePaint
 {
     public partial class MainWindow : Window
     {
-        private readonly DrawingAttributes penAtt = new()
+        private readonly DrawingAttributes penAtt = new DrawingAttributes
         {
             Color = Colors.Black,
             Height = 2,
@@ -23,7 +23,7 @@ namespace LivePaint
             IsHighlighter = false,
         };
 
-        private readonly DrawingAttributes highLighterAtt = new()
+        private readonly DrawingAttributes highLighterAtt = new DrawingAttributes
         {
             Color = Colors.Yellow,
             Height = 10,
@@ -103,7 +103,7 @@ namespace LivePaint
                     currY = position.Y,
                     color = CanvasDrawingAtt.Color.ToString(),
                     thickness = CanvasDrawingAtt.Height,
-                    isHighlighter = CanvasDrawingAtt.IsHighlighter,
+                    isHighlighter = CanvasDrawingAtt.IsHighlighter = HighlighterBtn.IsChecked == true,
                     isEraser = EraserBtn.IsChecked == true
                 };
 
@@ -128,7 +128,7 @@ namespace LivePaint
                     IsHighlighter = drawModel.isHighlighter,
                 }
             };
-            if (drawModel.isEraser)
+            if (drawModel.isEraser == true)
             {
                 var hitStrokes = Canvas.Strokes.HitTest(new Point(drawModel.currX, drawModel.currY), drawModel.thickness);
                 foreach (var hitStroke in hitStrokes)
